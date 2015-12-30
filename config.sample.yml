@@ -2,3 +2,7 @@ jira:
   baseUrl: http://jira.somewhere.com
   user: ??
   pass: ??
+trello:
+  boardId: ????????
+  apiKey: ??  # step 1: https://trello.com/1/appKey/generate
+  token: ??  # step 2: https://trello.com/1/authorize?key= ¿apiKey? &name=jello&expiration=never&response_type=token&scope=read,write
