@@ -1,0 +1,4 @@
+jira:
+  baseUrl: http://jira.somewhere.com
+  user: ??
+  pass: ??
