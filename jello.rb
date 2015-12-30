@@ -36,7 +36,7 @@ end
 def myIssues
   return @_myIssues if @_myIssues
   res = jira.get '/rest/api/latest/search' do |req|
-    req.params['jql'] = '(assignee = currentUser() OR reporter = currentUser()) AND resolution = Unresolved ORDER BY updatedDate DESC'
+    req.params['jql'] = '(assignee = currentUser() OR reporter = currentUser() OR creator = currentUser()) AND resolution = Unresolved ORDER BY updatedDate DESC'
   end
   @_myIssues = (JSON.parse res.body)['issues'].map do |i|
     {
