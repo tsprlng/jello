@@ -120,10 +120,12 @@ when 'list'
     puts i[:key] + "\t" + i[:status] + "\t" + i[:summary]
   end
 
-when /([a-z]+)-?([0-9]+)/i
+when /([a-z]*)-?([0-9]+)/i
   # open issue in browser if given a ticket key
-  # our ticket keys always look like e.g. PE-93; this will accept pe93 as i am lazy
-  `open #{jiraBaseUrl}/browse/#{$~[1].upcase}-#{$~[2]}`
+  # our ticket keys always look like e.g. PE-93; this will accept pe93 or 93 as i am lazy
+
+  project = ($~[1].empty? ? 'PE' : $~[1].upcase)  # default to platform engineering
+  `open #{jiraBaseUrl}/browse/#{project}-#{$~[2]}`
 
 when 'pull'
   pull
