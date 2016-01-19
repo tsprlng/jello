@@ -61,7 +61,7 @@ def trelloBoardInfo
   @_boardInfo = {
     id: config['trello']['boardId'],
     jiraLabelId: res['labels'].select {|l| l['name'].downcase == 'jira'} .first['id'],
-    inboxListId: res['lists'].select {|l| l['name'].downcase == 'inbox'} .first['id']
+    inboxListId: res['lists'].select {|l| l['name'].downcase == 'triage'} .first['id']
   }
 end
 
