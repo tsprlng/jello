@@ -1,3 +1,5 @@
+#!/usr/bin/ruby
+
 require 'faraday'
 require 'json'
 require 'pp'
@@ -36,8 +38,9 @@ end
 def myIssues
   return @_myIssues if @_myIssues
   res = jira.get '/rest/api/latest/search' do |req|
-    req.params['jql'] = '(assignee = currentUser() OR reporter = currentUser() OR creator = currentUser() OR issue in watchedIssues()) AND resolution = Unresolved ORDER BY updatedDate DESC'
+    req.params['jql'] = '(assignee = currentUser() OR reporter = currentUser() OR creator = currentUser() OR issue in watchedIssues()) AND resolved is EMPTY ORDER BY status DESC, updatedDate DESC'
   end
+  #p res
   @_myIssues = (JSON.parse res.body)['issues'].map do |i|
     {
       key: i['key'],
@@ -122,9 +125,9 @@ when 'list'
 
 when /([a-z]*)-?([0-9]+)/i
   # open issue in browser if given a ticket key
-  # our ticket keys always look like e.g. PE-93; this will accept pe93 or 93 as i am lazy
+  # our ticket keys always look like e.g. DEVOPS-93; this will accept devops93 or 93 as i am lazy
 
-  project = ($~[1].empty? ? 'PE' : $~[1].upcase)  # default to platform engineering
+  project = ($~[1].empty? ? 'DEVOPS' : $~[1].upcase)  # default to DEVOPS
   `open #{jiraBaseUrl}/browse/#{project}-#{$~[2]}`
 
 when 'pull'
