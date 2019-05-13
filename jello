@@ -38,7 +38,7 @@ end
 def myIssues
   return @_myIssues if @_myIssues
   res = jira.get '/rest/api/latest/search' do |req|
-    req.params['jql'] = '(assignee = currentUser() OR reporter = currentUser() OR creator = currentUser() OR issue in watchedIssues()) AND resolved is EMPTY ORDER BY status DESC, updatedDate DESC'
+    req.params['jql'] = '(assignee = currentUser() OR reporter = currentUser() OR (creator = currentUser() AND labels != "disowned") OR issue in watchedIssues()) AND resolved is EMPTY ORDER BY status DESC, updatedDate DESC'
   end
   #p res
   @_myIssues = (JSON.parse res.body)['issues'].map do |i|
@@ -128,7 +128,7 @@ when /([a-z]*)-?([0-9]+)/i
   # our ticket keys always look like e.g. DEVOPS-93; this will accept devops93 or 93 as i am lazy
 
   project = ($~[1].empty? ? 'DEVOPS' : $~[1].upcase)  # default to DEVOPS
-  `open #{jiraBaseUrl}/browse/#{project}-#{$~[2]}`
+  `chromium #{jiraBaseUrl}/browse/#{project}-#{$~[2]}`
 
 when 'pull'
   pull
