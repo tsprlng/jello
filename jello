@@ -78,23 +78,24 @@ def myTrelloCards
     {
       id: c['id'],
       jiraKey: c['attachments'].map {|a| /#{jiraBaseUrl}\/browse\/(.*)/.match( a['url'] )[1] } .first,
+      labels: c['labels'].map{|l| l['name'] }.to_a,
       closed: c['closed']
     }
   end
 end
 
 def pull
-  gotKeys = myTrelloCards.map {|c| c[:jiraKey]} .select {|k| k} .to_set
-  toAdd = myIssues.reject {|i| gotKeys.include? i[:key] }
+  gotKeys = myTrelloCards.map{|c| c[:jiraKey] }.select{|k| k }.to_set
+  toAdd = myIssues.reject{|i| gotKeys.include? i[:key] }
   return if toAdd.empty?
 
   count = toAdd.length
-  cards = Hash[ toAdd.map { |i|
+  cards = Hash[ toAdd.map{|i|
     [
       i[:key],
       {
         name: i[:summary],
-        desc: i[:description],
+        desc: (i[:description][0..300] rescue nil),
         idList: trelloBoardInfo[:inboxListId],
         idLabels: trelloBoardInfo[:jiraLabelId],
         due: nil
@@ -108,7 +109,19 @@ def pull
 
     print "(#{n}/#{count}) adding… "
     res = trello.post "/1/cards", cardParams
-    id = (JSON.parse res.body)['id']
+    begin
+      id = (JSON.parse res.body)['id']
+    rescue
+      $stderr.puts 
+      $stderr.puts 
+      $stderr.puts 'ERRORRORRRR'
+      $stderr.puts res.body
+      $stderr.puts 
+      p cardParams
+      sleep 1
+      $stderr.puts $!
+      next
+    end
 
     print "attaching… "
     trello.post "/1/cards/#{id}/attachments", {url: "#{jiraBaseUrl}/browse/#{jiraKey}"}
@@ -131,6 +144,8 @@ when /([a-z]*)-?([0-9]+)/i
   `chromium #{jiraBaseUrl}/browse/#{project}-#{$~[2]}`
 
 when 'pull'
+  #p myTrelloCards
+  #p myIssues
   pull
 
 else
