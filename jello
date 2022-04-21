@@ -77,7 +77,7 @@ def myTrelloCards
   @_myTrelloCards = (JSON.parse res.body).map do |c|
     {
       id: c['id'],
-      jiraKey: c['attachments'].map {|a| /#{jiraBaseUrl}\/browse\/(.*)/.match( a['url'] )[1] } .first,
+      jiraKey: (c['attachments'] rescue []).map {|a| /#{jiraBaseUrl}\/browse\/(.*)/.match( a['url'] )[1] rescue nil} .compact.first,
       labels: c['labels'].map{|l| l['name'] }.to_a,
       closed: c['closed']
     }
