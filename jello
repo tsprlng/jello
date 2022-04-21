@@ -20,7 +20,7 @@ end
 
 def jira
   @_jira ||= Faraday.new(:url => jiraBaseUrl) do |faraday|
-    faraday.request :authorization, :basic, *jiraCreds
+    faraday.request :basic_auth, *jiraCreds
     # faraday.response :logger                  # log requests to STDOUT
     faraday.adapter  Faraday.default_adapter  # make requests with Net::HTTP
   end
