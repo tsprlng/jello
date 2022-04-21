@@ -38,7 +38,7 @@ end
 def myIssues
   return @_myIssues if @_myIssues
   res = jira.get '/rest/api/latest/search' do |req|
-    req.params['jql'] = '(assignee = currentUser() OR reporter = currentUser() OR (creator = currentUser() AND labels != "disowned") OR issue in watchedIssues()) AND resolved is EMPTY ORDER BY status DESC, updatedDate DESC'
+    req.params['jql'] = %s[project='DEVOPS' and resolved is null and createdDate>'2022-01-01']
   end
   #p res
   @_myIssues = (JSON.parse res.body)['issues'].map do |i|
@@ -64,7 +64,7 @@ def trelloBoardInfo
   @_boardInfo = {
     id: config['trello']['boardId'],
     jiraLabelId: res['labels'].select {|l| l['name'].downcase == 'jira'} .first['id'],
-    inboxListId: res['lists'].select {|l| l['name'].downcase == 'triage'} .first['id']
+    inboxListId: res['lists'].select {|l| l['name'].downcase == 'teamwork'} .first['id']
   }
 end
 
@@ -98,7 +98,8 @@ def pull
         desc: (i[:description][0..300] rescue nil),
         idList: trelloBoardInfo[:inboxListId],
         idLabels: trelloBoardInfo[:jiraLabelId],
-        due: nil
+        due: nil,
+        pos: 'top',
       }
     ]
   }]
