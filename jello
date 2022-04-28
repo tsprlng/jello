@@ -38,7 +38,7 @@ end
 def myIssues
   return @_myIssues if @_myIssues
   res = jira.get '/rest/api/latest/search' do |req|
-    req.params['jql'] = %s[project='DEVOPS' and resolved is null and createdDate>'2022-01-01']
+    req.params['jql'] = %s[project='DEVOPS' and (resolved is null or resolution in (Unresolved, "\"Unresolved\"")) and createdDate>'2022-01-01']
   end
   #p res
   @_myIssues = (JSON.parse res.body)['issues'].map do |i|
