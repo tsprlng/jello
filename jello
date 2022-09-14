@@ -94,7 +94,7 @@ def pull
     [
       i[:key],
       {
-        name: i[:summary],
+        name: "#{i[:summary]} [#{i[:key[/\d+/]]}]",
         desc: (i[:description][0..300] rescue nil),
         idList: trelloBoardInfo[:inboxListId],
         idLabels: trelloBoardInfo[:jiraLabelId],
